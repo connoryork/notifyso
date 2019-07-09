@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+import requests
 
 app = Flask(__name__)
 clients = []
@@ -9,13 +10,16 @@ def index():
     # eventually show list of available client's to notify
     return render_template('index.html')
 
-@app.route('/connect-pi', methods=['POST'])
+@app.route('/connect', methods=['POST'])
 def connect():
     # get json body
+    content = request.json
+    print(content)
     # send test request to pi
+
     # if good, return good response
     # if bad, return bad response
-    return
+    return jsonify(success=True)
 
 @app.route('/light/{pi_name}')
 def display_notify_page():
@@ -39,4 +43,4 @@ def check_client(name):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=5000)

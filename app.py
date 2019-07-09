@@ -5,9 +5,7 @@ try:
     import RPi.GPIO as GPIO
 except ImportError:
     """
-    import FakeRPi.GPIO as GPIO
-    OR
-    import FakeRPi.RPiO as RPiO
+    import FakeRPi.GPIO as GPIO if not available
     """
 
     import FakeRPi.GPIO as GPIO
@@ -21,6 +19,24 @@ def index():
 @app.route('/sent')
 def sent():
     return render_template('sent.html')
+
+@app.route("/readPin/<pin>")
+def readPin(pin):
+   try:
+      GPIO.setup(int(pin), GPIO.IN)
+      if GPIO.input(int(pin)) == True:
+         response = "Pin number " + pin + " is high!"
+      else:
+         response = "Pin number " + pin + " is low!"
+   except:
+      response = "There was an error reading pin " + pin + "."
+
+   templateData = {
+      'title' : 'Status of Pin' + pin,
+      'response' : response
+      }
+
+   return render_template('pin.html', **templateData)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

@@ -18,7 +18,7 @@ def connect():
     address = content.get('address')
     if name is None or address is None:
         return "Name or address is missing, cannot connect", 400
-    if name in clients:
+    if client_exists(name):
         return "Name already registered under another client, pick another", 400
 
     clients[name] = address
@@ -37,23 +37,30 @@ def index():
 def display_notify_page(name):
     # if not, redirect to client doesnt exist page
     name = escape(name)
-    if name not in clients:
-        ## return render_template(404 page)
+    if not client_exists(name):
+        # return render_template(404 page) TODO
         return
     # else displays page with button to notify corresponding client
     return  # TODO
 
-@app.route('/notify/{pi_name}')
-def notify():
-    # check if client is connected
-    # if not, redirect to client doesnt exist page
-    # send a request to notify the client
-    # if request is 404, remove client from client list
-    # and redirect to client doesnt exist page?
-    pass
+@app.route('/notify/<name>')
+def notify(name):
+    name = escape(name)
+    if not client_exists(name):
+        # return render_template(404 page) TODO
+        return
+
+    # send a request to notify the client TODO
+    response = requests.post(clients.get(name)) # TODO what message do i want to send here
+
+    if not response.ok:
+        clients.pop(name)
+        # return render_template(404 page) TODO
+        return
+    return # TODO stay on same page? return client was successfully notified?
 
 
-def check_client(name):
+def client_exists(name):
     return name in clients
 
 

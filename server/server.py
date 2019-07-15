@@ -1,8 +1,31 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, escape
 import requests
 
 app = Flask(__name__)
-clients = []
+clients = {}
+
+
+####### CLIENT ENDPOINTS #######
+
+
+@app.route('/connect', methods=['POST'])
+def connect():
+    content = request.json
+    print(content)
+    # send test request to pi  TODO
+
+    name = content.get('name')
+    address = content.get('address')
+    if name is None or address is None:
+        return "Name or address is missing, cannot connect", 400
+    if name in clients:
+        return "Name already registered under another client, pick another", 400
+
+    clients[name] = address
+    return jsonify(success=True)
+
+
+####### USER ENDPOINTS #######
 
 
 @app.route('/')
@@ -10,23 +33,15 @@ def index():
     # eventually show list of available client's to notify
     return render_template('index.html')
 
-@app.route('/connect', methods=['POST'])
-def connect():
-    # get json body
-    content = request.json
-    print(content)
-    # send test request to pi
-
-    # if good, return good response
-    # if bad, return bad response
-    return jsonify(success=True)
-
-@app.route('/light/{pi_name}')
-def display_notify_page():
-    # check if client is connected
+@app.route('/light/<name>')
+def display_notify_page(name):
     # if not, redirect to client doesnt exist page
+    name = escape(name)
+    if name not in clients:
+        ## return render_template(404 page)
+        return
     # else displays page with button to notify corresponding client
-    pass
+    return  # TODO
 
 @app.route('/notify/{pi_name}')
 def notify():

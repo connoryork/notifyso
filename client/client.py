@@ -31,9 +31,12 @@ if __name__ == '__main__':
     # if not, print and exit
 
     # try connecting to server
-    response = requests.post("http://127.0.0.1:5000/connect-pi", json={"path": "something"})
+    print('sending request')
+    response = requests.post("http://127.0.0.1:5000/connect", json={"path": "something"})
     if response.ok:
         print(response)
+    else:
+        print(response.text)
     # if cant, retry
     # if never, then print and quit
 
